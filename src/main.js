@@ -43,15 +43,73 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Visual Parallax Effect (Simple)
-    // Moves the placeholder visuals slightly on scroll for a detached/floating feel
     window.addEventListener('scroll', () => {
         const scrollY = window.scrollY;
-        document.querySelectorAll('.article-visual').forEach((visual, index) => {
-            const speed = 0.05 * (index % 2 === 0 ? 1 : -1);
-            // visual.style.transform = `translateY(${scrollY * speed}px)`; 
-            // Commented out to keep it "Quiet" - enable if user wants more motion
-        });
+        // Placeholder
     });
+
+    // --- Dynamic Headline Text ---
+    const words = ["Data Enthusiast Community", "Data", "Insights", "Projects", "Stories", "Collaboration"];
+    const dynamicElement = document.querySelector('.dynamic-word');
+    if (dynamicElement) {
+        let wordIndex = 0;
+        setInterval(() => {
+            dynamicElement.style.transition = 'opacity 0.5s ease';
+            dynamicElement.style.opacity = '0';
+            setTimeout(() => {
+                wordIndex = (wordIndex + 1) % words.length;
+                dynamicElement.textContent = words[wordIndex];
+                dynamicElement.style.opacity = '1';
+            }, 500);
+        }, 3000);
+    }
+
+    // --- Scatterplot Animation ---
+    const scatterContainer = document.getElementById('scatterplot');
+    if (scatterContainer) {
+        const POINT_COUNT = 40;
+        for (let i = 0; i < POINT_COUNT; i++) {
+            const point = document.createElement('div');
+            point.classList.add('scatter-point');
+
+            // Random positioning
+            const x = Math.random() * 100;
+            const y = Math.random() * 100;
+            const size = Math.random() * 5 + 3; // 3-8px
+            const duration = Math.random() * 5 + 5; // 5-10s
+
+            point.style.left = `${x}%`;
+            point.style.top = `${y}%`;
+            point.style.width = `${size}px`;
+            point.style.height = `${size}px`;
+            point.style.opacity = Math.random() * 0.5 + 0.3;
+            point.style.animation = `floatPoint ${duration}s ease-in-out infinite`;
+            point.style.animationDelay = `${Math.random() * 5}s`;
+
+            if (Math.random() > 0.85) {
+                point.style.background = '#3b82f6'; // Accent color points
+            }
+
+            scatterContainer.appendChild(point);
+        }
+    }
+
+    // --- Carousel Logic ---
+    const track = document.getElementById('carouselTrack');
+    if (track) {
+        const images = track.querySelectorAll('img');
+        if (images.length > 0) {
+            let currentIndex = 0;
+            // Init
+            images[0].classList.add('active');
+
+            setInterval(() => {
+                images[currentIndex].classList.remove('active');
+                currentIndex = (currentIndex + 1) % images.length;
+                images[currentIndex].classList.add('active');
+            }, 3000); // 3 seconds per slide
+        }
+    }
 
     // Smooth scrolling for nav links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
