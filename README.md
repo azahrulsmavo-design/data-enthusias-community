@@ -9,7 +9,7 @@ Website ini dibangun dengan pendekatan **"Back to Basics"** untuk performa maksi
 ### Tech Stack
 - **Frontend**: 
   - **Vanilla JavaScript (ES6+)**: Logic utama tanpa framework dependency.
-  - **HTML5 & CSS3**: Layout modern dengan CSS Variables & Flexbox/Grid.
+  - **HTML5 & CSS3**: Layout modern dengan CSS Variables & Flexbox/Grid (Vanilla CSS, **No Tailwind**).
   - **Vite**: Build tool super cepat untuk development.
 - **Data Pipeline**:
   - **Python**: Script (`sync_sessions.py`) untuk mengambil data dari Google Sheets.
