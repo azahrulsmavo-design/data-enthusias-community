@@ -1,3 +1,5 @@
+import { fetchSessionsFromSheet } from './sheetApi.js';
+
 document.addEventListener('DOMContentLoaded', () => {
     // Intersection Observer for Scroll Animations (Replay Enabled)
     const observerOptions = {
@@ -238,18 +240,33 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!listContainer) return;
 
         let data = null;
-        const paths = ['/sessions.json', './sessions.json', 'public/sessions.json'];
+        let usedSheet = false;
 
-        for (const path of paths) {
-            try {
-                const response = await fetch(path);
-                if (response.ok) {
-                    data = await response.json();
-                    console.log(`Loaded sessions from ${path}`);
-                    break;
+        // 1. Try Google Sheets
+        try {
+            data = await fetchSessionsFromSheet();
+            if (data && Array.isArray(data)) {
+                usedSheet = true;
+                console.log("Loaded sessions from Google Sheets");
+            }
+        } catch (e) {
+            console.warn("Sheet fetch failed or not configured", e);
+        }
+
+        // 2. Fallback to local JSON
+        if (!data) {
+            const paths = ['/sessions.json', './sessions.json', 'public/sessions.json'];
+            for (const path of paths) {
+                try {
+                    const response = await fetch(path);
+                    if (response.ok) {
+                        data = await response.json();
+                        console.log(`Loaded sessions from ${path} (fallback)`);
+                        break;
+                    }
+                } catch (e) {
+                    console.warn(`Failed to load from ${path}`, e);
                 }
-            } catch (e) {
-                console.warn(`Failed to load from ${path}`, e);
             }
         }
 
@@ -261,11 +278,33 @@ document.addEventListener('DOMContentLoaded', () => {
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
-        const upcoming = data
-            .map(item => ({ ...item, objDate: parseDate(item.date) }))
-            // .filter(item => item.objDate >= today) // Uncomment to enable strict filtering
-            .sort((a, b) => a.objDate - b.objDate)
-            .slice(0, 5); // Max 5 sessions
+        let upcoming;
+
+        if (usedSheet) {
+            // Sheet data is already filtered "upcoming" and sorted by date string
+            // just map to add objDate for consistency if needed, though rendering just uses .date string
+            upcoming = data.map(item => ({
+                ...item,
+                objDate: parseDate(item.date)
+            }));
+
+            // Re-sort to be safe using the Date object logic which handles Indonesian months if present in future
+            // (The sheet API sorts by string comparison of YYYY-MM-DD which is correct, but let's be robust)
+            upcoming.sort((a, b) => a.objDate - b.objDate);
+        } else {
+            // JSON data needs full processing
+            upcoming = data
+                .map(item => ({ ...item, objDate: parseDate(item.date) }))
+                // Filter by status if available, fallback to include all (logic from before)
+                .filter(item => {
+                    if (item.status) return item.status.toLowerCase() === 'upcoming';
+                    return true;
+                })
+                .sort((a, b) => a.objDate - b.objDate);
+        }
+
+        // Slice to max 5
+        upcoming = upcoming.slice(0, 5);
 
         if (upcoming.length === 0) {
             listContainer.innerHTML = '<p class="text-muted">Belum ada sesi mendatang.</p>';
@@ -341,5 +380,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     }
 
-    fetchSessions(); // Init
+    // Initial load
+    fetchSessions();
+
+    // Polling every 2 minutes
+    setInterval(fetchSessions, 120_000);
 });

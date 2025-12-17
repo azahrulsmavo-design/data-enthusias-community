@@ -44,30 +44,42 @@ Jika Anda ingin menjalankan website ini secara lokal di komputer Anda:
 
 ## 📅 Cara Update Jadwal Sesi
 
-Daftar "Upcoming Sessions" dikelola melalui Google Sheets dan disinkronkan ke file `public/sessions.json`.
+Daftar "Upcoming Sessions" kini diambil **langsung** dari Google Sheets secara realtime (dengan caching ringan). Anda tidak perlu lagi menjalankan script Python manual.
 
-1.  **Isi Data di Google Sheets**
-    - Tambahkan baris baru untuk sesi mendatang.
-    - Kolom yang wajib: `id`, `title`, `subtitle`, `date` (YYYY-MM-DD), `time`, `location`, `link`, `description`, `poster_url`, `featured` (TRUE/FALSE).
-    - **Catatan**: Maksimal 5 sesi terdekat yang akan ditampilkan di website.
+### 1. Setup Environment (Pertama Kali)
+Pastikan Anda memiliki file `.env` di root folder antum:
+```env
+VITE_SHEET_ID=your_spreadsheet_id
+VITE_SHEETS_API_KEY=your_api_key
+```
 
-2.  **Jalankan Script Sinkronisasi**
-    Koneksi ke Google Sheets memerlukan `credentials.json` (Service Account Key).
-    *File `credentials.json` bersifat RAHASIA dan tidak boleh di-upload ke GitHub.*
+### 2. Update Data di Google Sheets
+Cukup edit langsung di Google Sheet. Website akan otomatis menampilkan data terbaru dalam waktu kurang lebih 2 menit (polling interval) atau saat refresh.
 
-    Jalankan perintah ini di terminal:
+- **Kolom Wajib**: `id`, `title`, `subtitle`, `date` (YYYY-MM-DD), `time`, `location`, `link`, `description`, `poster_url`, `featured` (TRUE/FALSE).
+- **Featured**: Set `TRUE` pada satu sesi untuk menampilkannya sebagai highlight utama.
+- **Status**: Pastikan status adalah `upcoming` agar muncul di daftar.
+
+### 3. Cara Mengupload Gambar Poster
+Kolom `poster_url` di Google Sheets membutuhkan **Link Gambar** yang valid (bukan file lokal di komputer Anda).
+
+**Opsi A: Gunakan Link Eksternal (Paling Mudah)**
+Jika Anda punya link gambar dari internet (misal: LinkedIn, Imgur, Google Drive yang dipublish, atau website lain), copas langsung linknya ke kolom `poster_url`.
+
+**Opsi B: Upload ke Repository GitHub (Untuk Aset Sendiri)**
+Jika Anda ingin menyimpan file gambar di dalam website ini:
+
+1.  Siapkan file gambar (JPG/PNG/WEBP), misal `poster-januari.jpg`.
+2.  Simpan file tersebut ke dalam folder `public/images/` di komputer Anda (buat folder `images` di dalam `public` jika belum ada).
+3.  Di Google Sheets, isi kolom `poster_url` dengan path: `/images/poster-januari.jpg`
+4.  **Wajib**: Lakukan Push ke GitHub agar gambar tersebut online.
+
     ```bash
-    python scripts/sync_sessions.py
-    ```
-    Script ini akan membaca Google Sheet dan memperbarui file `public/sessions.json`.
-
-3.  **Deploy Perubahan**
-    Setelah `sessions.json` terupdate, lakukan commit dan push ke GitHub:
-    ```bash
-    git add public/sessions.json
-    git commit -m "update: sync new sessions"
+    git add public/images/poster-januari.jpg
+    git commit -m "add: poster image for january session"
     git push origin main
     ```
+    *Selama gambar belum ada di GitHub, website live tidak akan bisa menampilkannya (broken image).*
 
 ## 🔒 Keamanan (PENTING)
 
