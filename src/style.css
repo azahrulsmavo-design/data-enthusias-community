@@ -788,7 +788,8 @@ body {
 
 .faq-item {
     border-bottom: 1px solid #e2e8f0;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
+    /* Reduced from 1rem */
 }
 
 .faq-question {
@@ -840,7 +841,9 @@ body {
     border-top: 1px solid #e2e8f0;
     background: #f8fafc;
     /* Slightly darker than pure white */
-    margin-top: 4rem;
+    margin-top: 0;
+    /* Reduced from 4rem, utilizing padding instead */
+    padding-top: 2rem;
 }
 
 .footer-grid {
@@ -940,7 +943,8 @@ body {
 
 /* New Sections Styling */
 .community-cta {
-    padding: var(--spacing-lg) 0;
+    padding: var(--spacing-md) 0;
+    /* Reduced from lg */
     text-align: center;
     max-width: var(--container-width);
     margin: 0 auto;
@@ -990,6 +994,13 @@ body {
     max-width: 600px;
 }
 
+/* Reduced spacing for About/Contact */
+.about-section,
+.contact-section {
+    padding: 1.5rem 0;
+    /* Reduced from var(--spacing-md) */
+}
+
 /* Updated Button for Light Mode */
 .btn-solid {
     display: inline-block;
@@ -1018,10 +1029,13 @@ body {
 /* Mobile Responsive Adjustments */
 @media (max-width: 768px) {
     :root {
-        /* Reduce spacing variables for mobile */
-        --spacing-lg: 3rem;
-        --spacing-md: 2rem;
-        --spacing-sm: 1rem;
+        /* Reduce spacing variables for mobile - TIGHTER */
+        --spacing-lg: 2rem;
+        /* Reduced from 3rem */
+        --spacing-md: 1.5rem;
+        /* Reduced from 2rem */
+        --spacing-sm: 0.75rem;
+        /* Reduced from 1rem */
     }
 
     .hero-title {
@@ -1265,8 +1279,10 @@ body {
 
 
 /* Editorial Section Spacing */
+/* Editorial Section Spacing Override - Reduced */
 .editorial-section {
-    padding: 6rem 0;
-    margin-top: 6rem;
-    background: white;
+    padding: var(--spacing-md) 0;
+    /* Reduced from 6rem */
+    margin-top: 0;
+    /* Removed huge 6rem margin */
 }
