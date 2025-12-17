@@ -1,0 +1,93 @@
+# Data Enthusiast Community (DEC) Website
+
+Website resmi untuk **Data Enthusiast Community (DEC)** — ruang kolaborasi untuk belajar, berbagi, dan bertumbuh bersama di dunia data. 🚀
+
+## 📋 Tentang Project
+
+Website ini dibangun sederhana namun modern menggunakan:
+- **HTML5 & CSS3** (Vanilla, responsive design).
+- **JavaScript (ES6+)** untuk interaktivitas dan pengambilan data sesi.
+- **Vite** sebagai build tool yang cepat.
+- **Google Sheets API** sebagai "CMS" sederhana untuk mengelola jadwal sesi.
+
+Fitur Utama:
+- **Mobile First Design**: Tampilan optimal di perangkat seluler dengan navigasi kaca (glassmorphism).
+- **Dynamic Content**: Daftar sesi diambil dari file `sessions.json` yang disinkronisasi dari Google Sheets.
+- **Micro-Interactions**: Animasi halus untuk navbar, accordion FAQ, dan kartu sesi.
+
+## 🛠️ Cara Menjalankan (Development)
+
+Jika Anda ingin menjalankan website ini secara lokal di komputer Anda:
+
+1.  **Clone Repository**
+    ```bash
+    git clone https://github.com/azahrulsmavo-design/data-enthusias-community.git
+    cd data-enthusias-community
+    ```
+
+2.  **Install Dependencies** (Pastikan Node.js sudah terinstall)
+    ```bash
+    npm install
+    ```
+
+3.  **Jalankan Server Lokal**
+    ```bash
+    npm run dev
+    ```
+    Buka `http://localhost:5173` di browser Anda.
+
+## 📅 Cara Update Jadwal Sesi
+
+Daftar "Upcoming Sessions" dikelola melalui Google Sheets dan disinkronkan ke file `public/sessions.json`.
+
+1.  **Isi Data di Google Sheets**
+    - Tambahkan baris baru untuk sesi mendatang.
+    - Kolom yang wajib: `id`, `title`, `subtitle`, `date` (YYYY-MM-DD), `time`, `location`, `link`, `description`, `poster_url`, `featured` (TRUE/FALSE).
+    - **Catatan**: Maksimal 5 sesi terdekat yang akan ditampilkan di website.
+
+2.  **Jalankan Script Sinkronisasi**
+    Koneksi ke Google Sheets memerlukan `credentials.json` (Service Account Key).
+    *File `credentials.json` bersifat RAHASIA dan tidak boleh di-upload ke GitHub.*
+
+    Jalankan perintah ini di terminal:
+    ```bash
+    python scripts/sync_sessions.py
+    ```
+    Script ini akan membaca Google Sheet dan memperbarui file `public/sessions.json`.
+
+3.  **Deploy Perubahan**
+    Setelah `sessions.json` terupdate, lakukan commit dan push ke GitHub:
+    ```bash
+    git add public/sessions.json
+    git commit -m "update: sync new sessions"
+    git push origin main
+    ```
+
+## 🔒 Keamanan (PENTING)
+
+- **`credentials.json`**: File ini berisi kunci akses ke Google Cloud. **JANGAN PERNAH** meng-commit file ini ke Git. Pastikan file ini selalu ada di dalam `.gitignore`.
+- Jika tidak sengaja ter-upload, segera hapus key service account lama di Google Cloud Console dan buat yang baru.
+
+## 📂 Struktur Folder
+
+```
+├── docs/                # Dokumentasi proyek
+├── public/
+│   ├── sessions.json    # Data sesi (Output dari script python)
+│   └── vite.svg
+├── scripts/
+│   └── sync_sessions.py # Script untuk fetch data dari GSheets
+├── src/
+│   ├── main.js          # Logic utama frontend
+│   └── style.css        # Styling utama
+├── index.html           # Halaman utama
+├── package.json         # Dependencies Node.js
+└── .gitignore           # Daftar file yang diabaikan Git
+```
+
+## 👥 Kontak
+
+Jika ada pertanyaan teknis atau ingin berkontribusi, silakan hubungi tim pengurus DEC atau buat Issue di repository ini.
+
+---
+*Learn, Build, and Grow Together Through Data.*

@@ -264,7 +264,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const upcoming = data
             .map(item => ({ ...item, objDate: parseDate(item.date) }))
             // .filter(item => item.objDate >= today) // Uncomment to enable strict filtering
-            .sort((a, b) => a.objDate - b.objDate);
+            .sort((a, b) => a.objDate - b.objDate)
+            .slice(0, 5); // Max 5 sessions
 
         if (upcoming.length === 0) {
             listContainer.innerHTML = '<p class="text-muted">Belum ada sesi mendatang.</p>';
