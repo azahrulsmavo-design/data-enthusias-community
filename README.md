@@ -4,16 +4,22 @@ Website resmi untuk **Data Enthusiast Community (DEC)** — ruang kolaborasi unt
 
 ## 📋 Tentang Project
 
-Website ini dibangun sederhana namun modern menggunakan:
-- **HTML5 & CSS3** (Vanilla, responsive design).
-- **JavaScript (ES6+)** untuk interaktivitas dan pengambilan data sesi.
-- **Vite** sebagai build tool yang cepat.
-- **Google Sheets API** sebagai "CMS" sederhana untuk mengelola jadwal sesi.
+Website ini dibangun dengan pendekatan **"Back to Basics"** untuk performa maksimal, tanpa framework frontend yang berat (No React/Vue):
+
+### Tech Stack
+- **Frontend**: 
+  - **Vanilla JavaScript (ES6+)**: Logic utama tanpa framework dependency.
+  - **HTML5 & CSS3**: Layout modern dengan CSS Variables & Flexbox/Grid.
+  - **Vite**: Build tool super cepat untuk development.
+- **Data Pipeline**:
+  - **Python**: Script (`sync_sessions.py`) untuk mengambil data dari Google Sheets.
+  - **Google Sheets**: Digunakan sebagai CMS (Content Management System) agar tim non-teknis bisa update jadwal.
+  - **JSON**: Output data statis (`sessions.json`) yang ringan untuk diload website.
 
 Fitur Utama:
 - **Mobile First Design**: Tampilan optimal di perangkat seluler dengan navigasi kaca (glassmorphism).
-- **Dynamic Content**: Daftar sesi diambil dari file `sessions.json` yang disinkronisasi dari Google Sheets.
-- **Micro-Interactions**: Animasi halus untuk navbar, accordion FAQ, dan kartu sesi.
+- **Fast Performance**: Tanpa render blocking dari framework besar.
+- **Dynamic Content**: Jadwal sesi selalu update via sinkronisasi Google Sheets.
 
 ## 🛠️ Cara Menjalankan (Development)
 
