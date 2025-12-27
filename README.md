@@ -81,11 +81,6 @@ Jika Anda ingin menyimpan file gambar di dalam website ini:
     ```
     *Selama gambar belum ada di GitHub, website live tidak akan bisa menampilkannya (broken image).*
 
-## 🔒 Keamanan (PENTING)
-
-- **`credentials.json`**: File ini berisi kunci akses ke Google Cloud. **JANGAN PERNAH** meng-commit file ini ke Git. Pastikan file ini selalu ada di dalam `.gitignore`.
-- Jika tidak sengaja ter-upload, segera hapus key service account lama di Google Cloud Console dan buat yang baru.
-
 ## 📂 Struktur Folder
 
 ```

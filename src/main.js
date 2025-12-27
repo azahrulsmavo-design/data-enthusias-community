@@ -235,10 +235,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return new Date(`${year}-${month}-${day}`);
     }
 
-    async function fetchSessions() {
-        const listContainer = document.getElementById('sessionsList');
-        if (!listContainer) return;
-
+    async function getSessionsData() {
         let data = null;
         let usedSheet = false;
 
@@ -269,120 +266,192 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         }
+        return { data, usedSheet };
+    }
+
+    async function initSessions() {
+        // Identify Page
+        const homeContainer = document.getElementById('sessionsList');
+        const allSessionsContainer = document.getElementById('allSessionsList');
+        const detailContainer = document.getElementById('sessionDetailContent');
+
+        if (!homeContainer && !allSessionsContainer && !detailContainer) return;
+
+        const { data, usedSheet } = await getSessionsData();
 
         if (!data) {
-            listContainer.innerHTML = '<p class="text-muted">Gagal memuat jadwal (File not found).</p>';
+            const msg = '<p class="text-muted">Gagal memuat jadwal (File not found).</p>';
+            if (homeContainer) homeContainer.innerHTML = msg;
+            if (allSessionsContainer) allSessionsContainer.innerHTML = msg;
+            if (detailContainer) detailContainer.innerHTML = msg;
             return;
         }
 
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+        let sessions = data;
 
-        let upcoming;
-
+        // Sort
         if (usedSheet) {
-            // Sheet data is already filtered "upcoming" and sorted by date string
-            // just map to add objDate for consistency if needed, though rendering just uses .date string
-            upcoming = data.map(item => ({
+            sessions = data.map(item => ({
                 ...item,
                 objDate: parseDate(item.date)
-            }));
-
-            // Re-sort to be safe using the Date object logic which handles Indonesian months if present in future
-            // (The sheet API sorts by string comparison of YYYY-MM-DD which is correct, but let's be robust)
-            upcoming.sort((a, b) => a.objDate - b.objDate);
+            })).sort((a, b) => a.objDate - b.objDate);
         } else {
-            // JSON data needs full processing
-            upcoming = data
-                .map(item => ({ ...item, objDate: parseDate(item.date) }))
-                // Filter by status if available, fallback to include all (logic from before)
-                .filter(item => {
-                    if (item.status) return item.status.toLowerCase() === 'upcoming';
-                    return true;
-                })
-                .sort((a, b) => a.objDate - b.objDate);
+            sessions = data.map(item => ({
+                ...item,
+                objDate: parseDate(item.date)
+            })).sort((a, b) => a.objDate - b.objDate);
         }
 
-        // Slice to max 5
-        upcoming = upcoming.slice(0, 5);
+        // --- RENDER LOGIC ---
 
-        if (upcoming.length === 0) {
-            listContainer.innerHTML = '<p class="text-muted">Belum ada sesi mendatang.</p>';
-            return;
-        }
+        // 1. Home Page (Limit 5 Upcoming)
+        if (homeContainer) {
+            const upcoming = sessions.filter(item => {
+                if (item.status) return item.status.toLowerCase() === 'upcoming';
+                return true;
+            }).slice(0, 5);
 
-        let featuredItem = upcoming.find(item => item.featured === "TRUE" || item.featured === true);
-        if (!featuredItem) featuredItem = upcoming[0];
+            if (upcoming.length === 0) {
+                homeContainer.innerHTML = '<p class="text-muted">Belum ada sesi mendatang.</p>';
+            } else {
+                let featuredItem = upcoming.find(item => item.featured === "TRUE" || item.featured === true);
+                if (!featuredItem) featuredItem = upcoming[0];
+                const listItems = upcoming.filter(item => item !== featuredItem);
 
-        const listItems = upcoming.filter(item => item !== featuredItem);
-        let html = '';
-
-        // Featured
-        html += `
-                <div class="session-featured fade-up">
-                    <div class="poster-container">
-                        <img src="${featuredItem.poster_url}" alt="${featuredItem.title}" loading="lazy">
-                    </div>
-                    <div class="session-content">
-                        <div class="session-badges">
-                            <span class="badge-featured">Featured Session</span>
-                            <span class="badge-date">${featuredItem.date}</span>
+                let html = `
+                    <div class="session-featured fade-up">
+                        <div class="poster-container">
+                            <a href="/session-detail.html?id=${featuredItem.id}">
+                                <img src="${featuredItem.poster_url}" alt="${featuredItem.title}" loading="lazy">
+                            </a>
                         </div>
-                        <h3 class="card-title large">${featuredItem.title}</h3>
-                        <p class="card-subtitle">${featuredItem.subtitle}</p>
-                        <div class="card-meta">
-                            <span>⏰ ${featuredItem.time}</span>
-                            <span>📍 ${featuredItem.location}</span>
-                        </div>
-                        <p class="card-desc">${featuredItem.description}</p>
-                        <a href="${featuredItem.link}" class="btn-link large-link">Ikut Sesi &rarr;</a>
-                    </div>
-                </div>
-            `;
-
-        // List
-        if (listItems.length > 0) {
-            html += `<div class="session-list-stack">`;
-            listItems.forEach((item, index) => {
-                html += `
-                        <div class="session-list-item fade-up delay-${index}">
-                             <div class="poster-container small">
-                                <img src="${item.poster_url}" alt="${item.title}" loading="lazy">
+                        <div class="session-content">
+                            <div class="session-badges">
+                                <span class="badge-featured">Featured Session</span>
+                                <span class="badge-date">${featuredItem.date}</span>
                             </div>
-                            <div class="session-content compact">
-                                <h4 class="card-title small">${item.title}</h4>
-                                <div class="card-meta compact">
-                                    <span>📅 ${item.date}</span>
-                                    <span>⏰ ${item.time}</span>
+                            <h3 class="card-title large"><a href="/session-detail.html?id=${featuredItem.id}" style="text-decoration:none; color:inherit;">${featuredItem.title}</a></h3>
+                            <p class="card-subtitle">${featuredItem.subtitle}</p>
+                            <div class="card-meta">
+                                <span>⏰ ${featuredItem.time}</span>
+                                <span>📍 ${featuredItem.location}</span>
+                            </div>
+                            <p class="card-desc">${featuredItem.description}</p>
+                            <a href="/session-detail.html?id=${featuredItem.id}" class="btn-link large-link">Lihat Detail &rarr;</a>
+                        </div>
+                    </div>
+                `;
+
+                if (listItems.length > 0) {
+                    html += `<div class="session-list-stack">`;
+                    listItems.forEach((item, index) => {
+                        html += `
+                            <div class="session-list-item fade-up delay-${index}">
+                                 <div class="poster-container small">
+                                    <a href="/session-detail.html?id=${item.id}">
+                                        <img src="${item.poster_url}" alt="${item.title}" loading="lazy">
+                                    </a>
                                 </div>
-                                <p class="card-desc compact">${item.description}</p>
-                                <a href="${item.link}" class="btn-link small-link">Ikut Sesi &rarr;</a>
+                                <div class="session-content compact">
+                                    <h4 class="card-title small"><a href="/session-detail.html?id=${item.id}" style="text-decoration:none; color:inherit;">${item.title}</a></h4>
+                                    <div class="card-meta compact">
+                                        <span>📅 ${item.date}</span>
+                                        <span>⏰ ${item.time}</span>
+                                    </div>
+                                    <p class="card-desc compact">${item.description}</p>
+                                    <a href="/session-detail.html?id=${item.id}" class="btn-link small-link">Lihat Detail &rarr;</a>
+                                </div>
                             </div>
+                        `;
+                    });
+                    html += `</div>`;
+                }
+                homeContainer.innerHTML = html;
+
+                // Re-init observer for delays
+                setTimeout(() => {
+                    const newAnimatedElements = homeContainer.querySelectorAll('.fade-up');
+                    const existingObserver = new IntersectionObserver((entries) => {
+                        entries.forEach(entry => {
+                            if (entry.isIntersecting) entry.target.classList.add('visible');
+                        });
+                    }, { threshold: 0.1 });
+                    newAnimatedElements.forEach(el => existingObserver.observe(el));
+                }, 100);
+            }
+        }
+
+        // 2. All Sessions Page
+        if (allSessionsContainer) {
+            // Render all, maybe grouped by upcoming/past, but for now just a grid list
+            // Or reuse the list stack style
+            let html = `<div class="session-list-stack">`;
+            sessions.forEach(item => {
+                html += `
+                    <div class="session-list-item">
+                         <div class="poster-container small">
+                            <a href="/session-detail.html?id=${item.id}">
+                                <img src="${item.poster_url}" alt="${item.title}" loading="lazy">
+                            </a>
                         </div>
-                    `;
+                        <div class="session-content compact">
+                            <h4 class="card-title small"><a href="/session-detail.html?id=${item.id}" style="text-decoration:none; color:inherit;">${item.title}</a></h4>
+                            <div class="card-meta compact">
+                                <span>📅 ${item.date}</span>
+                                <span>⏰ ${item.time}</span>
+                                <span>📍 ${item.location}</span>
+                            </div>
+                            <p class="card-desc compact">${item.description}</p>
+                            <a href="/session-detail.html?id=${item.id}" class="btn-link small-link">Lihat Detail &rarr;</a>
+                        </div>
+                    </div>
+                `;
             });
             html += `</div>`;
+            allSessionsContainer.innerHTML = html;
         }
-        listContainer.innerHTML = html;
 
-        // Observe new elements for animation
-        setTimeout(() => {
-            const newAnimatedElements = listContainer.querySelectorAll('.fade-up');
-            const existingObserver = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                    }
-                });
-            }, { threshold: 0.1 });
-            newAnimatedElements.forEach(el => existingObserver.observe(el));
-        }, 100);
+        // 3. Detail Page
+        if (detailContainer) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const id = urlParams.get('id');
+            const session = sessions.find(s => s.id === id);
 
+            if (!session) {
+                detailContainer.innerHTML = '<p>Sesi tidak ditemukan.</p>';
+            } else {
+                detailContainer.innerHTML = `
+                    <div class="session-featured" style="grid-template-columns: 1fr; gap: 2rem;">
+                         <div class="poster-container" style="max-width: 400px; margin: 0 auto;">
+                            <img src="${session.poster_url}" alt="${session.title}">
+                        </div>
+                        <div class="session-content">
+                             <div class="session-badges">
+                                <span class="badge-featured" style="background:var(--accent-color);">${session.type}</span>
+                                <span class="badge-date">${session.date}</span>
+                            </div>
+                            <h1 class="card-title" style="font-size: 2.5rem; margin-top: 1rem;">${session.title}</h1>
+                            <p class="card-subtitle" style="font-size: 1.2rem;">${session.subtitle}</p>
+                            
+                             <div class="card-meta" style="font-size: 1rem;">
+                                <span>⏰ ${session.time}</span>
+                                <span>📍 ${session.location}</span>
+                            </div>
+                            
+                            <div style="margin-top: 2rem; white-space: pre-wrap; line-height: 1.8; font-size: 1.1rem; color: var(--text-dark-muted);">
+                                ${session.description}
+                            </div>
+                            
+                            <div style="margin-top: 3rem;">
+                                <a href="${session.link}" class="btn-solid" target="_blank">Daftar / Ikut Sesi</a>
+                            </div>
+                        </div>
+                    </div>
+                 `;
+            }
+        }
     }
 
     // Initial load
-    fetchSessions();
-
-    // Polling every 2 minutes
-    setInterval(fetchSessions, 120_000);
+    initSessions();
 });

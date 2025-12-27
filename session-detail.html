@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Session Detail | Data Analyst Community</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Manrope:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="./src/style.css" />
+</head>
+
+<body>
+    <div id="app">
+        <nav class="navbar">
+            <div class="logo"><a href="/" style="color:inherit; text-decoration:none;">DEC</a></div>
+            <ul class="nav-links">
+                <a href="/#about">About</a>
+                <a href="/#activities">Activities</a>
+                <a href="/#community" class="hide-mobile">Community</a>
+                <a href="https://chat.whatsapp.com/BE6WhskAhYSLVJGMPuEVGa" class="btn-nav-join" target="_blank">Join</a>
+            </ul>
+        </nav>
+
+        <main>
+            <section class="editorial-section" style="padding-top: 8rem;" id="sessionDetailContainer">
+                <div class="container-width" style="max-width: 800px; margin: 0 auto;">
+                    <a href="/sessions.html" class="btn-link small-link mb-4" style="display:inline-block;">&larr; Back
+                        to All Sessions</a>
+
+                    <div id="sessionDetailContent">
+                        <div class="loading-state">Loading session details...</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Footer -->
+            <footer class="editorial-footer">
+                <div class="footer-grid">
+                    <div class="footer-brand">
+                        <h4>Data Analyst Community</h4>
+                        <p>© 2025 Data Analyst Community<br>Built by the community, for the community.</p>
+                    </div>
+                    <div class="footer-links">
+                        <a href="#">Instagram</a>
+                        <a href="#">LinkedIn</a>
+                        <a href="https://chat.whatsapp.com/BE6WhskAhYSLVJGMPuEVGa">WhatsApp</a>
+                    </div>
+                </div>
+            </footer>
+        </main>
+    </div>
+    <script type="module" src="./src/main.js"></script>
+</body>
+
+</html>

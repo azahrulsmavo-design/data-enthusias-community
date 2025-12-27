@@ -14,12 +14,16 @@
     --font-display: 'Manrope', sans-serif;
     --font-body: 'Inter', sans-serif;
 
-    --spacing-lg: 5rem;
-    --spacing-md: 3rem;
-    --spacing-sm: 1.5rem;
+    --spacing-lg: 3.5rem;
+    /* Reduced from 5rem */
+    --spacing-md: 2rem;
+    /* Reduced from 3rem */
+    --spacing-sm: 1rem;
+    /* Reduced from 1.5rem */
 
     /* Reduced max-width for "Centered" feel */
-    --container-width: 1100px;
+    --container-width: 1000px;
+    /* Tighter container */
 }
 
 * {
@@ -444,7 +448,8 @@ body {
 .editorial-right {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 1.5rem;
+    /* Reduced gap */
 }
 
 /* Featured Card */
@@ -453,9 +458,9 @@ body {
 /* Featured Card */
 .session-featured {
     display: grid;
-    grid-template-columns: 180px 1fr;
-    /* Fixed poster width */
-    gap: 2rem;
+    grid-template-columns: 160px 1fr;
+    /* Slightly smaller poster fixed width */
+    gap: 1.5rem;
     background: white;
     border-radius: 24px;
     padding: 2rem;
@@ -471,7 +476,7 @@ body {
 
 .poster-container {
     width: 100%;
-    aspect-ratio: 9 / 16;
+    aspect-ratio: 210 / 297;
     border-radius: 12px;
     overflow: hidden;
     position: relative;
@@ -919,25 +924,44 @@ body {
         display: block;
     }
 
+    /* Fix container padding on mobile */
+    .sticky-container,
+    .hero-editorial,
+    .editorial-grid,
+    .about-grid,
+    .contact-grid {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
+
     .sticky-left {
         position: relative;
         top: 0;
         width: 100%;
-        margin-bottom: 3rem;
+        margin-bottom: 2rem;
+        /* Reduced margin */
     }
 
     .hero-content {
         padding-right: 0;
-        padding-bottom: 3rem;
+        padding-bottom: 2rem;
+        padding-top: 12vh;
+        /* Adjusted top padding */
     }
 
     .hero-title {
-        font-size: 3rem;
+        font-size: 2.5rem;
+        /* More manageable title size */
     }
 
     .navbar {
         justify-content: space-between;
-        padding: 1rem 1.5rem;
+        padding: 0.8rem 1.2rem;
+    }
+
+    /* Add space between sticky header and list on mobile */
+    .editorial-right {
+        margin-top: 2rem;
     }
 }
 
@@ -1158,6 +1182,10 @@ body {
     .btn-nav-join {
         padding: 0.5rem 1rem;
         font-size: 0.8rem;
+    }
+
+    .hide-mobile {
+        display: none;
     }
 
     /* ... existing mobile styles ... */
