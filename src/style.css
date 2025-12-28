@@ -963,6 +963,17 @@ body {
     .editorial-right {
         margin-top: 2rem;
     }
+
+    /* Scale Animation for Mobile */
+    .visual-abstract {
+        height: 35vh;
+        /* Reduced from 60vh */
+    }
+
+    .scatter-point {
+        transform: scale(0.6);
+        /* Smaller points */
+    }
 }
 
 /* New Sections Styling */
